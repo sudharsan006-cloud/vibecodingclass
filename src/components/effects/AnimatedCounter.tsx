@@ -34,7 +34,7 @@ export function AnimatedCounter({
             hasAnimated.current = true;
             let start: number | null = null;
 
-            function step(ts: number) {
+            const step = (ts: number) => {
               if (!start) start = ts;
               const p = Math.min((ts - start) / duration, 1);
               const eased = 1 - Math.pow(1 - p, 3); // cubic ease-out
@@ -43,7 +43,7 @@ export function AnimatedCounter({
                 target % 1 === 0 ? Math.round(val).toString() : val.toFixed(1);
               setDisplay(formatted);
               if (p < 1) requestAnimationFrame(step);
-            }
+            };
 
             requestAnimationFrame(step);
             observer.unobserve(el);

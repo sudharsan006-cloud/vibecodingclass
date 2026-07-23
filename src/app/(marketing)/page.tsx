@@ -1,7 +1,6 @@
 "use client";
 
-import { useRef } from "react";
-import { motion, useInView } from "framer-motion";
+import { motion } from "framer-motion";
 import Link from "next/link";
 import { ScrollReveal } from "@/components/effects/Parallax";
 import { ScrollProgress } from "@/components/effects/ScrollProgress";

@@ -18,7 +18,6 @@ interface Point {
 }
 
 const GOLD1 = [212, 175, 55];
-const GOLD2 = [244, 229, 178];
 const STEEL2 = [200, 204, 212];
 const SPARK = [59, 130, 246];
 
@@ -282,13 +281,13 @@ export function HeroMorphCanvas() {
       const target = 48.2;
       const dur = 1800;
       let nwStart: number | null = null;
-      function nwStep(ts: number) {
+      const nwStep = (ts: number) => {
         if (!nwStart) nwStart = ts;
         const p = Math.min((ts - nwStart) / dur, 1);
         const eased = 1 - Math.pow(1 - p, 3);
         if (nwEl) nwEl.textContent = "₹" + (target * eased).toFixed(1) + "L";
         if (p < 1) requestAnimationFrame(nwStep);
-      }
+      };
       setTimeout(() => requestAnimationFrame(nwStep), 400);
     }
 
