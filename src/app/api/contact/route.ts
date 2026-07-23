@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Insert into database using Prisma
-    await prisma.contactMessage.create({
+    const newContact = await prisma.contactMessage.create({
       data: {
         name: cleanName,
         email: cleanEmail,
@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
       {
         success: true,
         message: "Thank you! Your message has been sent successfully.",
-        id: insertResult.insertId,
+        id: newContact.id,
       },
       { status: 201 }
     );
@@ -80,9 +80,11 @@ export async function POST(request: NextRequest) {
 
 export async function GET() {
   try {
-    const [rows] = await pool.execute(
-      "SELECT * FROM contacts ORDER BY created_at DESC"
-    );
+    const rows = await prisma.contactMessage.findMany({
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
     return NextResponse.json({ contacts: rows }, { status: 200 });
   } catch (error: unknown) {
     console.error("Fetch contacts error:", error);
