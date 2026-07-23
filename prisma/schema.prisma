@@ -67,3 +67,12 @@ model HealthScoreSnapshot {
   liquidityScore        Float
   overallScore          Float
 }
+
+model ContactMessage {
+  id        String   @id @default(uuid())
+  name      String
+  email     String
+  subject   String
+  message   String   @db.Text
+  createdAt DateTime @default(now())
+}

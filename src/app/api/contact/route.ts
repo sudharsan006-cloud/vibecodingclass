@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import pool from "@/lib/db";
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
 
 export async function POST(request: NextRequest) {
   try {
@@ -36,13 +38,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Insert into database
-    const [result] = await pool.execute(
-      "INSERT INTO contacts (name, email, subject, message) VALUES (?, ?, ?, ?)",
-      [cleanName, cleanEmail, cleanSubject, cleanMessage]
-    );
-
-    const insertResult = result as { insertId: number };
+    // Insert into database using Prisma
+    await prisma.contactMessage.create({
+      data: {
+        name: cleanName,
+        email: cleanEmail,
+        subject: cleanSubject,
+        message: cleanMessage,
+      },
+    });
 
     return NextResponse.json(
       {
