@@ -4,46 +4,33 @@ import { format } from "date-fns";
 
 export const dynamic = 'force-dynamic';
 
-const prisma = new PrismaClient();
-
-// In a real app we'd get the authenticated user. For this portfolio, we just grab the first user.
+// Mock data to bypass Vercel DB connection issues
 async function getDashboardData() {
-  const user = await prisma.user.findFirst({
-    include: {
-      accounts: {
-        include: {
-          transactions: {
-            orderBy: { date: 'desc' },
-            take: 5
-          }
-        }
-      },
-      healthScores: {
-        orderBy: { date: 'asc' }
-      }
-    }
-  });
+  const user = { name: "Alex Finfix" };
 
-  if (!user) return null;
-
-  let totalCash = 0;
-  let totalInvestments = 0;
-  let totalCredit = 0;
-
-  user.accounts.forEach(acc => {
-    if (acc.type === 'bank') totalCash += acc.balance;
-    if (acc.type === 'stock' || acc.type === 'mf' || acc.type === 'crypto' || acc.type === 'gold') totalInvestments += acc.balance;
-    if (acc.type === 'credit_card' || acc.type === 'loan') totalCredit += acc.balance;
-  });
+  const totalCash = 250000;
+  const totalInvestments = 850000;
+  const totalCredit = 50000;
 
   const netWorth = totalCash + totalInvestments + totalCredit;
 
-  const allTransactions = user.accounts
-    .flatMap(a => a.transactions)
-    .sort((a, b) => b.date.getTime() - a.date.getTime())
-    .slice(0, 8);
+  const allTransactions = [
+    { id: '1', type: 'debit', merchant: 'Whole Foods', category: 'Groceries', date: new Date(), amount: 4500 },
+    { id: '2', type: 'debit', merchant: 'Netflix', category: 'Entertainment', date: new Date(Date.now() - 86400000), amount: 499 },
+    { id: '3', type: 'credit', merchant: 'Salary', category: 'Income', date: new Date(Date.now() - 86400000 * 2), amount: 150000 },
+    { id: '4', type: 'debit', merchant: 'Uber', category: 'Transport', date: new Date(Date.now() - 86400000 * 3), amount: 850 },
+    { id: '5', type: 'debit', merchant: 'Amazon', category: 'Shopping', date: new Date(Date.now() - 86400000 * 4), amount: 12000 },
+  ];
 
-  return { user, netWorth, totalCash, totalInvestments, totalCredit, allTransactions, healthScore: user.healthScores[user.healthScores.length - 1] };
+  return { 
+    user, 
+    netWorth, 
+    totalCash, 
+    totalInvestments, 
+    totalCredit, 
+    allTransactions, 
+    healthScore: { overallScore: 85 } 
+  };
 }
 
 function formatCurrency(amount: number) {

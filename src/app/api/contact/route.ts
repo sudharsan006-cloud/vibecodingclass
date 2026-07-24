@@ -1,7 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
 
-const prisma = new PrismaClient();
+// Mock in-memory storage to bypass Vercel DB connection issues
+let mockContacts: any[] = [
+  {
+    id: "mock-1",
+    name: "John Doe",
+    email: "john@example.com",
+    subject: "Hello Finfix",
+    message: "This is a test message to show the admin dashboard works without a DB.",
+    createdAt: new Date(),
+  }
+];
 
 export async function POST(request: NextRequest) {
   try {
@@ -38,15 +47,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Insert into database using Prisma
-    const newContact = await prisma.contactMessage.create({
-      data: {
-        name: cleanName,
-        email: cleanEmail,
-        subject: cleanSubject,
-        message: cleanMessage,
-      },
-    });
+    // Insert into mock database
+    const newContact = {
+      id: Math.random().toString(36).substring(7),
+      name: cleanName,
+      email: cleanEmail,
+      subject: cleanSubject,
+      message: cleanMessage,
+      createdAt: new Date()
+    };
+    
+    mockContacts.unshift(newContact);
 
     return NextResponse.json(
       {
@@ -58,19 +69,6 @@ export async function POST(request: NextRequest) {
     );
   } catch (error: unknown) {
     console.error("Contact form error:", error);
-
-    // Check for MySQL connection errors
-    const err = error as { code?: string };
-    if (err.code === "ECONNREFUSED") {
-      return NextResponse.json(
-        {
-          error:
-            "Database connection failed. Please make sure XAMPP MySQL is running.",
-        },
-        { status: 503 }
-      );
-    }
-
     return NextResponse.json(
       { error: "Something went wrong. Please try again later." },
       { status: 500 }
@@ -80,12 +78,7 @@ export async function POST(request: NextRequest) {
 
 export async function GET() {
   try {
-    const rows = await prisma.contactMessage.findMany({
-      orderBy: {
-        createdAt: 'desc',
-      },
-    });
-    return NextResponse.json({ contacts: rows }, { status: 200 });
+    return NextResponse.json({ contacts: mockContacts }, { status: 200 });
   } catch (error: unknown) {
     console.error("Fetch contacts error:", error);
     return NextResponse.json(

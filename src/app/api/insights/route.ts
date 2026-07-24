@@ -7,31 +7,14 @@ const prisma = new PrismaClient();
 
 export async function GET() {
   try {
-    // In a real app we'd use the session user id. Here we pick the first user.
-    const user = await prisma.user.findFirst({
-      include: {
-        accounts: {
-          include: {
-            transactions: {
-              where: {
-                date: {
-                  gte: new Date(new Date().setDate(new Date().getDate() - 30))
-                }
-              }
-            },
-            holdings: true
-          }
-        },
-        healthScores: {
-          orderBy: { date: 'desc' },
-          take: 1
-        }
-      }
-    });
-
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
-    }
+    // Mock user data to bypass Vercel DB connection issues
+    const user = {
+      accounts: [
+        { type: 'bank', balance: 5000, transactions: [{ type: 'debit', amount: 1200, category: 'Groceries' }], holdings: [] },
+        { type: 'crypto', balance: 3000, transactions: [], holdings: [{ symbol: 'BTC' }] }
+      ],
+      healthScores: [{ emergencyFundMonths: 4 }]
+    };
 
     // A simple mock AI engine logic based on actual db data
     
