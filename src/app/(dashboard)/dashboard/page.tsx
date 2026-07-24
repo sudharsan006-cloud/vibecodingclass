@@ -2,6 +2,8 @@ import { PrismaClient } from "@prisma/client";
 import { ArrowUpRight, ArrowDownRight, Wallet, Activity, CreditCard, Landmark } from "lucide-react";
 import { format } from "date-fns";
 
+export const dynamic = 'force-dynamic';
+
 const prisma = new PrismaClient();
 
 // In a real app we'd get the authenticated user. For this portfolio, we just grab the first user.
