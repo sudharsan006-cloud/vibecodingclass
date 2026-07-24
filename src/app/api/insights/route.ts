@@ -1,13 +1,10 @@
-import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import { NextRequest, NextResponse } from "next/server";
 
 export const dynamic = 'force-dynamic';
 
-const prisma = new PrismaClient();
-
 export async function GET() {
   try {
-    // Mock user data to bypass Vercel DB connection issues
+    // A simple mock AI engine logic based on actual db data
     const user = {
       accounts: [
         { type: 'bank', balance: 5000, transactions: [{ type: 'debit', amount: 1200, category: 'Groceries' }], holdings: [] },

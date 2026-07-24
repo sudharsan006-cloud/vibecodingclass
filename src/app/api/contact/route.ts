@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 // Mock in-memory storage to bypass Vercel DB connection issues
-let mockContacts: any[] = [
+const mockContacts = [
   {
     id: "mock-1",
     name: "John Doe",

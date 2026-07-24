@@ -1,4 +1,3 @@
-import { PrismaClient } from "@prisma/client";
 import { ArrowUpRight, ArrowDownRight, Wallet, Activity, CreditCard, Landmark } from "lucide-react";
 import { format } from "date-fns";
 
