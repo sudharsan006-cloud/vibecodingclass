@@ -1,15 +1,12 @@
-import mysql from "mysql2/promise";
+import { PrismaClient } from "@prisma/client";
 
-// MySQL connection config — uses XAMPP defaults
-const pool = mysql.createPool({
-  host: process.env.MYSQL_HOST || "localhost",
-  port: Number(process.env.MYSQL_PORT) || 3306,
-  user: process.env.MYSQL_USER || "root",
-  password: process.env.MYSQL_PASSWORD || "",
-  database: process.env.MYSQL_DATABASE || "Finage_contact",
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0,
-});
+// Prevent multiple Prisma instances in development (hot-reload)
+const globalForPrisma = globalThis as unknown as {
+  prisma: PrismaClient | undefined;
+};
 
-export default pool;
+const prisma = globalForPrisma.prisma ?? new PrismaClient();
+
+if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+
+export default prisma;

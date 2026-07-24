@@ -1,16 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
+import prisma from "@/lib/db";
 
-// Mock in-memory storage to bypass Vercel DB connection issues
-const mockContacts = [
-  {
-    id: "mock-1",
-    name: "John Doe",
-    email: "john@example.com",
-    subject: "Hello Finfix",
-    message: "This is a test message to show the admin dashboard works without a DB.",
-    createdAt: new Date(),
-  }
-];
+export const dynamic = "force-dynamic";
 
 export async function POST(request: NextRequest) {
   try {
@@ -47,17 +38,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Insert into mock database
-    const newContact = {
-      id: Math.random().toString(36).substring(7),
-      name: cleanName,
-      email: cleanEmail,
-      subject: cleanSubject,
-      message: cleanMessage,
-      createdAt: new Date()
-    };
-    
-    mockContacts.unshift(newContact);
+    // Insert into Aiven MySQL via Prisma
+    const newContact = await prisma.contactMessage.create({
+      data: {
+        name: cleanName,
+        email: cleanEmail,
+        subject: cleanSubject,
+        message: cleanMessage,
+      },
+    });
 
     return NextResponse.json(
       {
@@ -78,7 +67,11 @@ export async function POST(request: NextRequest) {
 
 export async function GET() {
   try {
-    return NextResponse.json({ contacts: mockContacts }, { status: 200 });
+    const contacts = await prisma.contactMessage.findMany({
+      orderBy: { createdAt: "desc" },
+    });
+
+    return NextResponse.json({ contacts }, { status: 200 });
   } catch (error: unknown) {
     console.error("Fetch contacts error:", error);
     return NextResponse.json(
